@@ -24,8 +24,8 @@ func Splitext(path string) (string, string) {
 
 // Dealing with already existing files with the same name. Returns a string
 // with the Windows-popularized format of "filename (number).extension".
-func RepeatedFilenames(url string) string {
-	base, ext := Splitext(url)
+func RepeatedFilenames(path string) string {
+	base, ext := Splitext(path)
 	files_this_name := 0
 	filename := fmt.Sprintf("%s%s", base, ext)
 	for FileExists(filename) {
