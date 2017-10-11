@@ -7,6 +7,14 @@ import(
 	"strings"
 )
 
+const(
+	// Characters that Windows will reject in filenames
+	CHARACTERS_WINDOWS_HATES string = "~#%&*{}\\:<>?/|\""
+	
+	// A single character considered safe for use in Windows filenames
+	SECURE_WINDOWS_CHARACHTER string = "_"
+)
+
 // Golang: "A simple 'isFile' or 'FileExists' function? Fuck that, you filthy causual!"
 func FileExists(filename string) (bool, error) {
 	_, err := os.Stat(filename)
@@ -50,4 +58,26 @@ func RepeatedFilenames(path string) (string, error) {
 		}
 	}
 	return filename, nil
+}
+
+// Sanitize a filename for use on Windows. The boolean is to specify if spaces
+// are to be sanitized too.
+func SanitizeFilename(filename string, replace_spaces bool) (string, error) {
+	new_filename := filename
+	
+	var prohibited string = CHARACTERS_WINDOWS_HATES
+	
+	if replace_spaces {
+		prohibited += " "
+	}
+	
+	for _, c := range prohibited {
+		new_filename = strings.Replace(new_filename, string(c), SECURE_WINDOWS_CHARACHTER, -1)
+	}
+	
+	if new_filename == "" {
+		return filename, fmt.Errorf("Filename %s was composed of *only* illigal charachters", filename)
+	}
+	
+	return new_filename, nil
 }
